@@ -29,13 +29,13 @@
 
 static void SubBytes(uchar *State) {
 	int i;
-	for(i = 0; i < Nb * 4; i++)
+	for(i = 0; i < BSIZE; i++)
 		State[i] = S[State[i]];
 }
 
 static void inv_SubBytes(uchar *State) {
 	int i;
-	for(i = 0; i < Nb * 4; i++)
+	for(i = 0; i < BSIZE; i++)
 		State[i] = inv_S[State[i]];
 }
 
@@ -219,7 +219,7 @@ static uchar *MsgToState(uchar *Msg) {
     uchar *State;
     int i;
 
-    if((State = malloc(Nb * 4)) == NULL)
+    if((State = malloc(BSIZE)) == NULL)
         return NULL;
 
     for(i = 0; i < Nb; i++) {
@@ -308,7 +308,7 @@ void aes_FreeContext(aes_ctx_t Context) {
 /* TODO!! */
 
 uchar *aes_ContextToChar(aes_ctx_t Context) {
-	uchar *out = malloc(Nb * 4);
+	uchar *out = malloc(BSIZE);
 	int i, j;
 
 	if(out == NULL)

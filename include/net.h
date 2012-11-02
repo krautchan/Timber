@@ -39,7 +39,7 @@
 #define MSG_ERR		0x675afc4f
 
 #define SERVER_PORT 31338
-#define BUFSIZE 64
+#define BUFSIZE 512
 
 typedef struct {
 	int dh_remote_key_size;
@@ -53,8 +53,8 @@ connection_info_t conn;
 int StartWinsock(void);
 unsigned char *crypt_recv(SOCKET s);
 int crypt_send(SOCKET s, unsigned char *data, size_t size);
-int recv_msg(SOCKET s);
-int send_msg(SOCKET s, int msg);
+int RecvMsg(SOCKET s);
+int SendMsg(SOCKET s, int msg);
 int ClientHandshake(SOCKET s);
 int ServerHandshake(SOCKET s);
 SOCKET CreateConnectSocket(char *remote, int port);

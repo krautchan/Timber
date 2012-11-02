@@ -83,18 +83,18 @@ static void ServerLoop(SOCKET s) {
 		if(ServerHandshake(connected) == 1) {
 			active = 1;
 			do {				
-				msg = recv_msg(connected);
+				msg = RecvMsg(connected);
 				switch(msg) {
 					case MSG_PING:
-						send_msg(connected, MSG_PONG);
+						SendMsg(connected, MSG_PONG);
 						break;
 					case MSG_SLOG:
-						send_msg(connected, MSG_DATA);
+						SendMsg(connected, MSG_DATA);
 						SendLog(connected);
 						break;
 					case MSG_QUIT:
 						quit = 1;
-						send_msg(connected, MSG_ACK);
+						SendMsg(connected, MSG_ACK);
 					case MSG_ERR:
 						active = 0;
 						break;

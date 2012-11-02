@@ -41,6 +41,8 @@
 #define Nk	8
 #define Nr	(Nk + 6)
 
+#define BSIZE (Nb * 4)
+
 typedef struct {
 	uint *ExpKey;
 	uchar *State;

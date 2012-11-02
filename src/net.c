@@ -40,10 +40,10 @@
 #error Network role unknown.
 #endif
 
-static int checknonce(unsigned char *data) {
+static int CheckNonce(unsigned char *data) {
 	int i;
 
-	for(i = 0; i < Nb * 2; i++)
+	for(i = 0; i < BSIZE / 2; i++)
 		if(data[i] != conn.nonce[i])
 			return 0;
 		
@@ -96,7 +96,7 @@ int StartWinsock(void) {
 
 unsigned char *crypt_recv(SOCKET s) {
 	int blocks, i;
-	unsigned char IV[Nb * 4], ct[Nb * 4], *pt, *out;
+	unsigned char IV[BSIZE], ct[BSIZE], *pt, *out;
 	aes_ctx_t context;
 
 	if((recv(s, (char*)&blocks, sizeof(blocks), 0)) != sizeof(blocks))
@@ -105,14 +105,14 @@ unsigned char *crypt_recv(SOCKET s) {
 	if(blocks < 1)
 		return NULL;
 
-	if((out = malloc((blocks - 1) * Nb * 4)) == NULL)
+	if((out = malloc((blocks - 1) * BSIZE)) == NULL)
 		return NULL;
 
-//	memset(out, 0, (blocks - 1) * Nb * 4);
-	recv(s, IV, Nb * 4, 0);
+//	memset(out, 0, (blocks - 1) * BSIZE);
+	recv(s, IV, BSIZE, 0);
 
 	for(i = 1; i < blocks; i++) {
-		if(recv(s, ct, Nb * 4, 0) == 0) {			
+		if(recv(s, ct, BSIZE, 0) == 0) {			
 			free(out);
 			return NULL;
 		}
@@ -120,65 +120,65 @@ unsigned char *crypt_recv(SOCKET s) {
 		aes_InitContext(&context, ct, conn.dh_shared_key);
 		aes_Decrypt(context);
 		pt = aes_ContextToChar(context);
-		pt = xorchar(pt, IV, Nb * 4);
+		pt = xorchar(pt, IV, BSIZE);
 
-		memcpy(out + (i - 1) * Nb * 4, pt, Nb * 4);
+		memcpy(out + (i - 1) * BSIZE, pt, BSIZE);
 		free(pt);
-		memcpy(IV, ct, Nb * 4);
+		memcpy(IV, ct, BSIZE);
 	}
 
 	return out;
 }
 
 int crypt_send(SOCKET s, unsigned char *data, size_t size) {
-	unsigned char IV[Nb * 4], lastblock[4 * Nb], *ct, *pt;
+	unsigned char IV[BSIZE], lastblock[BSIZE], *ct, *pt;
 	int blocks;
 	aes_ctx_t context;
 
 	blocks = 1;
-	blocks += size / (Nb * 4);
-	blocks += (size % (Nb * 4))?1:0;
+	blocks += size / (BSIZE);
+	blocks += (size % (BSIZE))?1:0;
 
 	send(s, (char*)&blocks, sizeof(blocks), 0);
-	fillbuffer(IV, Nb * 4, NULL);
-	send(s, (char*)IV, Nb * 4, 0);
+	fillbuffer(IV, BSIZE, NULL);
+	send(s, (char*)IV, BSIZE, 0);
 		
-	while(size > (Nb * 4)) {
-		pt = xorchar(data, IV, Nb * 4);
+	while(size > (BSIZE)) {
+		pt = xorchar(data, IV, BSIZE);
 		aes_InitContext(&context, pt, conn.dh_shared_key);
 		free(pt);
 		aes_Encrypt(context);
 		ct = aes_ContextToChar(context);
 
-		send(s, ct, Nb * 4, 0);
-		memcpy(IV, ct, Nb * 4);
+		send(s, ct, BSIZE, 0);
+		memcpy(IV, ct, BSIZE);
 
 		aes_FreeContext(context);
 		free(ct);
 		
-		size -= Nb * 4;
-		data += Nb * 4;
+		size -= BSIZE;
+		data += BSIZE;
 	}
 
 	if(size) {
-		memset(lastblock, 0, Nb * 4);
+		memset(lastblock, 0, BSIZE);
 		memcpy(lastblock, data, size);
 
-		pt = xorchar(lastblock, IV, Nb * 4);
+		pt = xorchar(lastblock, IV, BSIZE);
 		aes_InitContext(&context, pt, conn.dh_shared_key);
 		free(pt);
 		aes_Encrypt(context);
 		ct = aes_ContextToChar(context);
 		aes_FreeContext(context);
 		
-		send(s, ct, Nb * 4, 0);
+		send(s, ct, BSIZE, 0);
 		free(ct);
 	}
 
 	return blocks;
 }
 
-int recv_msg(SOCKET s) {
+int RecvMsg(SOCKET s) {
 	unsigned char *data;
 	int msg;
 	
@@ -186,32 +186,32 @@ int recv_msg(SOCKET s) {
 		return MSG_ERR;
 	}
 
-	if(!checknonce(data)) {
+	if(!CheckNonce(data)) {
 		free(data);
 		return MSG_ERR;
 	}	
-	memcpy(&msg, data + Nb * 4 - sizeof(msg), sizeof(msg));
+	memcpy(&msg, data + BSIZE - sizeof(msg), sizeof(msg));
 
 	free(data);
 	return msg;
 }
 
-int send_msg(SOCKET s, int msg) {
-	unsigned char data[Nb * 4];
+int SendMsg(SOCKET s, int msg) {
+	unsigned char data[BSIZE];
 
 	/* compose message */
-	memset(data, 0, Nb * 4);
-	memcpy(data, conn.nonce, Nb * 2);
-	memcpy(data + Nb * 4 - sizeof(msg), &msg, sizeof(msg));
+	memset(data, 0, BSIZE);
+	memcpy(data, conn.nonce, BSIZE / 2);
+	memcpy(data + BSIZE - sizeof(msg), &msg, sizeof(msg));
 
-	crypt_send(s, data, Nb * 4);
+	crypt_send(s, data, BSIZE);
 
 	return 1;
 }
 
 int ClientHandshake(SOCKET s) {
 	int magic, version, rep;
-	unsigned char encnonce[Nb * 4];
+	unsigned char encnonce[BSIZE];
 	size_t size;
 	hash_t hash;
 	aes_ctx_t context;
@@ -312,7 +312,7 @@ int ClientHandshake(SOCKET s) {
 	EstablishSharedSecret();
 	
 	printf("Shared secret established.\nReceiving nonce... ");
-	recv(s, encnonce, Nb * 4, 0);
+	recv(s, encnonce, BSIZE, 0);
 	
 	aes_InitContext(&context, encnonce, conn.dh_shared_key);
 	aes_Decrypt(context);
@@ -322,8 +322,8 @@ int ClientHandshake(SOCKET s) {
 	printf("Ok.\nHandshake complete.\n\n");
 	printf("PING... ");
 
-	send_msg(s, MSG_PING);
-	if(recv_msg(s) == MSG_PONG) {
+	SendMsg(s, MSG_PING);
+	if(RecvMsg(s) == MSG_PONG) {
 		printf("PONG!\n\n");
 		return 1;
 	}
@@ -371,14 +371,14 @@ int ServerHandshake(SOCKET s) {
 	EstablishSharedSecret();
 
 	/* Generating Nonce */
-	conn.nonce = malloc(Nb * 4);
-	fillbuffer(conn.nonce, Nb * 4, NULL);
+	conn.nonce = malloc(BSIZE);
+	fillbuffer(conn.nonce, BSIZE, NULL);
 
 	/* Encrypting and sending Nonce */
 	aes_InitContext(&context, conn.nonce, conn.dh_shared_key);
 	aes_Encrypt(context);
 	encnonce = aes_ContextToChar(context);
-	send(s, encnonce, Nb * 4, 0);
+	send(s, encnonce, BSIZE, 0);
 
 	free(encnonce);
 	aes_FreeContext(context);
