@@ -94,7 +94,7 @@ int StartWinsock(void) {
 	return WSAStartup(MAKEWORD(2,0), &wsa);
 }
 
-unsigned char *crypt_recv(SOCKET s) {
+unsigned char *CryptRecvData(SOCKET s) {
 	int blocks, i;
 	unsigned char IV[BSIZE], ct[BSIZE], *pt, *out;
 	aes_ctx_t context;
@@ -130,7 +130,7 @@ unsigned char *crypt_recv(SOCKET s) {
 	return out;
 }
 
-int crypt_send(SOCKET s, unsigned char *data, size_t size) {
+int CryptSendData(SOCKET s, unsigned char *data, size_t size) {
 	unsigned char IV[BSIZE], lastblock[BSIZE], *ct, *pt;
 	int blocks;
 	aes_ctx_t context;
@@ -178,11 +178,11 @@ int crypt_send(SOCKET s, unsigned char *data, size_t size) {
 	return blocks;
 }
 
-int RecvMsg(SOCKET s) {
+int CryptRecvMsg(SOCKET s) {
 	unsigned char *data;
 	int msg;
 	
-	if((data = crypt_recv(s)) == NULL) {
+	if((data = CryptRecvData(s)) == NULL) {
 		return MSG_ERR;
 	}
 
@@ -196,7 +196,7 @@ int RecvMsg(SOCKET s) {
 	return msg;
 }
 
-int SendMsg(SOCKET s, int msg) {
+int CryptSendMsg(SOCKET s, int msg) {
 	unsigned char data[BSIZE];
 
 	/* compose message */
@@ -204,7 +204,7 @@ int SendMsg(SOCKET s, int msg) {
 	memcpy(data, conn.nonce, BSIZE / 2);
 	memcpy(data + BSIZE - sizeof(msg), &msg, sizeof(msg));
 
-	crypt_send(s, data, BSIZE);
+	CryptSendData(s, data, BSIZE);
 
 	return 1;
 }
@@ -322,8 +322,8 @@ int ClientHandshake(SOCKET s) {
 	printf("Ok.\nHandshake complete.\n\n");
 	printf("PING... ");
 
-	SendMsg(s, MSG_PING);
-	if(RecvMsg(s) == MSG_PONG) {
+	CryptSendMsg(s, MSG_PING);
+	if(CryptRecvMsg(s) == MSG_PONG) {
 		printf("PONG!\n\n");
 		return 1;
 	}

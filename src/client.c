@@ -42,7 +42,7 @@ static void RecvLog(SOCKET s) {
 	printf(" Blocks: %d\n", blocks);
 
 	for(i = 0; i < blocks; i++) {
-		buf = crypt_recv(s);
+		buf = CryptRecvData(s);
 		fwrite(buf, BUFSIZE, 1, fp);
 		free(buf);
 	}
@@ -67,15 +67,15 @@ static void CommandLoop(SOCKET s) {
 
 		switch(c) {
 			case 'p':
-				SendMsg(s, MSG_PING);
+				CryptSendMsg(s, MSG_PING);
 				break;
 			case 's':
-				SendMsg(s, MSG_SLOG);				
+				CryptSendMsg(s, MSG_SLOG);				
 				break;
 			case 'q':				
 				d = getchar();
 				if(d == '!') {
-					SendMsg(s, MSG_QUIT);
+					CryptSendMsg(s, MSG_QUIT);
 					active = 0;
 				} else {
 					printf("Use 'q!' if you are sure.\n");
@@ -89,7 +89,7 @@ static void CommandLoop(SOCKET s) {
 				sent = 0;
 		}
 		if(sent) {
-			msg = RecvMsg(s);
+			msg = CryptRecvMsg(s);
 			printf("Server: ");
 			switch(msg) {
 				case MSG_ACK: printf("ACK\n"); break;

@@ -51,10 +51,10 @@ typedef struct {
 connection_info_t conn;
 
 int StartWinsock(void);
-unsigned char *crypt_recv(SOCKET s);
-int crypt_send(SOCKET s, unsigned char *data, size_t size);
-int RecvMsg(SOCKET s);
-int SendMsg(SOCKET s, int msg);
+unsigned char *CryptRecvData(SOCKET s);
+int CryptSendData(SOCKET s, unsigned char *data, size_t size);
+int CryptRecvMsg(SOCKET s);
+int CryptSendMsg(SOCKET s, int msg);
 int ClientHandshake(SOCKET s);
 int ServerHandshake(SOCKET s);
 SOCKET CreateConnectSocket(char *remote, int port);

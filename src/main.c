@@ -52,14 +52,14 @@ static void SendLog(SOCKET s) {
 	while(size > BUFSIZE) {
 		fseek(fp, offs, SEEK_SET);
 		fread(buf, BUFSIZE, 1, fp);
-		crypt_send(s, buf, BUFSIZE);
+		CryptSendData(s, buf, BUFSIZE);
 		size -= BUFSIZE;
 		offs += BUFSIZE;
 	}
 	if(size) {
 		fseek(fp, offs, SEEK_SET);
 		fread(buf, size, 1, fp);
-		crypt_send(s, buf, size);
+		CryptSendData(s, buf, size);
 	}
 
 	fclose(fp);
@@ -83,18 +83,18 @@ static void ServerLoop(SOCKET s) {
 		if(ServerHandshake(connected) == 1) {
 			active = 1;
 			do {				
-				msg = RecvMsg(connected);
+				msg = CryptRecvMsg(connected);
 				switch(msg) {
 					case MSG_PING:
-						SendMsg(connected, MSG_PONG);
+						CryptSendMsg(connected, MSG_PONG);
 						break;
 					case MSG_SLOG:
-						SendMsg(connected, MSG_DATA);
+						CryptSendMsg(connected, MSG_DATA);
 						SendLog(connected);
 						break;
 					case MSG_QUIT:
 						quit = 1;
-						SendMsg(connected, MSG_ACK);
+						CryptSendMsg(connected, MSG_ACK);
 					case MSG_ERR:
 						active = 0;
 						break;
