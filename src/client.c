@@ -30,7 +30,7 @@
 
 #define LOGFILE "remotelog.txt"
 
-static void recv_log(SOCKET s) {
+static void RecvLog(SOCKET s) {
 	FILE *fp;
 	int blocks = 0, i;
 	unsigned char *buf;
@@ -42,7 +42,7 @@ static void recv_log(SOCKET s) {
 	printf(" Blocks: %d\n", blocks);
 
 	for(i = 0; i < blocks; i++) {
-		buf = crypt_recv(s);
+		buf = CryptRecvData(s);
 		fwrite(buf, BUFSIZE, 1, fp);
 		free(buf);
 	}
@@ -67,15 +67,15 @@ static void CommandLoop(SOCKET s) {
 
 		switch(c) {
 			case 'p':
-				send_msg(s, MSG_PING);
+				CryptSendMsg(s, MSG_PING);
 				break;
 			case 's':
-				send_msg(s, MSG_SLOG);				
+				CryptSendMsg(s, MSG_SLOG);				
 				break;
 			case 'q':				
 				d = getchar();
 				if(d == '!') {
-					send_msg(s, MSG_QUIT);
+					CryptSendMsg(s, MSG_QUIT);
 					active = 0;
 				} else {
 					printf("Use 'q!' if you are sure.\n");
@@ -89,7 +89,7 @@ static void CommandLoop(SOCKET s) {
 				sent = 0;
 		}
 		if(sent) {
-			msg = recv_msg(s);
+			msg = CryptRecvMsg(s);
 			printf("Server: ");
 			switch(msg) {
 				case MSG_ACK: printf("ACK\n"); break;
@@ -97,7 +97,7 @@ static void CommandLoop(SOCKET s) {
 				case MSG_PONG: printf("PONG!\n"); break;
 				case MSG_DATA: 
 					printf("Sending Data...\n");
-					recv_log(s);
+					RecvLog(s);
 					break;
 				default:
 					printf("Code %08x\n", msg);			
