@@ -1,13 +1,7 @@
-#include <WinSock2.h>
-#include <stdio.h>
-
-#include "..\include\net.h"
-
-#define REMOTE_ADDR "127.0.0.1"
 /* 
  * client.c -- Logger client main source file
  * 
- * Copyright (C) 2012  Martin Wolters et al.
+ * Copyright (C) 2012  Martin Wolters
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +20,13 @@
  * Boston, MA  02110-1301, USA
  * 
  */
+
+#include <WinSock2.h>
+#include <stdio.h>
+
+#include "..\include\net.h"
+
+#define REMOTE_ADDR "127.0.0.1"
 
 #define LOGFILE "remotelog.txt"
 
