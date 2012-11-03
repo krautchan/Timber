@@ -43,7 +43,7 @@ static void RecvLog(SOCKET s) {
 
 	for(i = 0; i < blocks; i++) {
 		buf = CryptRecvData(s);
-		fwrite(buf, BUFSIZE, 1, fp);
+		fwrite(buf, 1, BUFSIZE, fp);
 		free(buf);
 	}
 	recv(s, (char*)&blocks, sizeof(blocks), 0);

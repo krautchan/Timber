@@ -95,7 +95,7 @@ int StartWinsock(void) {
 }
 
 unsigned char *CryptRecvData(SOCKET s) {
-	int blocks, i;
+	int blocks, mallsize, i;
 	unsigned char IV[BSIZE], ct[BSIZE], *pt, *out;
 	aes_ctx_t context;
 
@@ -105,10 +105,14 @@ unsigned char *CryptRecvData(SOCKET s) {
 	if(blocks < 1)
 		return NULL;
 
-	if((out = malloc((blocks - 1) * BSIZE)) == NULL)
+	mallsize = ((blocks - 1) * BSIZE) / BUFSIZE;
+	mallsize *= BUFSIZE;
+	mallsize += (((blocks - 1) * BSIZE) % BUFSIZE)?BUFSIZE:0;
+	
+	if((out = malloc(mallsize)) == NULL)
 		return NULL;
+	memset(out, 0, mallsize);
 
-//	memset(out, 0, (blocks - 1) * BSIZE);
 	recv(s, IV, BSIZE, 0);
 
 	for(i = 1; i < blocks; i++) {
@@ -121,7 +125,7 @@ unsigned char *CryptRecvData(SOCKET s) {
 		aes_Decrypt(context);
 		pt = aes_ContextToChar(context);
 		pt = xorchar(pt, IV, BSIZE);
-
+				
 		memcpy(out + (i - 1) * BSIZE, pt, BSIZE);
 		free(pt);
 		memcpy(IV, ct, BSIZE);

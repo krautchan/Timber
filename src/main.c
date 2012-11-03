@@ -34,7 +34,6 @@ static void SendLog(SOCKET s) {
 	FILE *fp;
 	size_t size, blocks, offs = 0;
 	unsigned char buf[BUFSIZE];
-
 	int zero = 0;
 	
 	if(StopLogger() == -1) goto send0;
