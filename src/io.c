@@ -26,6 +26,7 @@
 
 #include "..\include\sha256.h"
 #include "..\include\tommath.h"
+#include "..\include\memory.h"
 
 unsigned char *xorchar(unsigned char *a, unsigned char *b, size_t size) {
 	size_t i;
@@ -97,6 +98,8 @@ int gentable(char *id, mp_int *in, FILE *fp) {
 
 	fputs("\n};\n\n", fp);
 
+	free(c);
+
 	return 1;
 }
 
@@ -125,6 +128,8 @@ int gensource(mp_int *p, mp_int *g, mp_int *priv, mp_int *pub, mp_int *auth, cha
 			hash_auth.h4, hash_auth.h5, hash_auth.h6, hash_auth.h7);		
 	
 	fprintf(fp, "#endif\n");
+
+	free(hash_auth.string);
 
 	fclose(fp);
 

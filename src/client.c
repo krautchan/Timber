@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 #include "..\include\net.h"
+#include "..\include\memory.h"
 
 #define REMOTE_ADDR "127.0.0.1"
 
@@ -43,7 +44,7 @@ static void RecvLog(SOCKET s) {
 
 	for(i = 0; i < blocks; i++) {
 		buf = CryptRecvData(s);
-		fwrite(buf, BUFSIZE, 1, fp);
+		fwrite(buf, 1, BUFSIZE, fp);
 		free(buf);
 	}
 	recv(s, (char*)&blocks, sizeof(blocks), 0);
@@ -134,5 +135,14 @@ int main(int argc, char **argv) {
 		CommandLoop(s);
 
 	WSACleanup();
+
+	if(conn.dh_remote_key)
+		free(conn.dh_remote_key);
+	if(conn.dh_shared_key)
+		free(conn.dh_shared_key);
+	if(conn.nonce)
+		free(conn.nonce);
+
+	showmemstats(stdout);
 	return EXIT_SUCCESS;
 }

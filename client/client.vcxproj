@@ -83,6 +83,7 @@
     <ClCompile Include="..\src\io.c" />
     <ClCompile Include="..\src\net.c" />
     <ClCompile Include="..\src\sha256.c" />
+    <ClCompile Include="..\src\memory.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\aes.h" />
@@ -90,6 +91,7 @@
     <ClInclude Include="..\include\io.h" />
     <ClInclude Include="..\include\net.h" />
     <ClInclude Include="..\include\sha256.h" />
+    <ClInclude Include="..\include\memory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
