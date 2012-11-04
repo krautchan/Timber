@@ -126,5 +126,6 @@ void showmemstats(FILE *fp) {
 			free_entry(buf);
 		}
 	}
-	fprintf(fp, "%d malloc()s; %d free()s.\n", n_mallocs, n_frees);
+	if(n_mallocs != n_frees)
+		fprintf(fp, "%d malloc()s; %d free()s.\n", n_mallocs, n_frees);
 }
