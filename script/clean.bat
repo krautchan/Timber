@@ -1,9 +1,12 @@
 @echo off
 
 cd ..
-attrib -h log.txt
+
+attrib -h -s log.txt
 attrib -h timber.suo
 del /q log.txt
+del /q remotelog.txt
+del /q memlog.txt
 del /q timber.suo
 del /q timber.sdf
 del /q timber.opensdf
@@ -24,3 +27,5 @@ del /q client\client.vcxproj.user
 rd /q /s server\debug
 rd /q /s server\release
 del /q server\logger.vcxproj.user
+
+cd script
