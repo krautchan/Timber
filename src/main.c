@@ -27,6 +27,7 @@
 #include "..\include\logger.h"
 #include "..\include\net.h"
 #include "..\include\tommath.h"
+#include "..\include\memory.h"
 
 #define LOGFILE "log.txt"
 
@@ -120,6 +121,7 @@ static void ServerLoop(SOCKET s) {
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	SOCKET s;
+	FILE *fp;
 
 	StartLogger(TEXT(LOGFILE));
 	
@@ -132,5 +134,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	ServerLoop(s);
 
 	WSACleanup();
+
+#ifdef OUTPUT_STATS
+	if((fp = fopen("memlog.txt", "w")) != NULL) {
+		showmemstats(fp);
+		fclose(fp);
+	}
+#endif
+
 	return 0;
 }

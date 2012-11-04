@@ -26,6 +26,7 @@
 
 #include "..\include\aes.h"
 #include "..\include\tables.h"
+#include "..\include\memory.h"
 
 static void SubBytes(uchar *State) {
 	int i;
@@ -271,7 +272,7 @@ void aes_UpdateContext(aes_ctx_t *Context, uchar *Msg, uchar *Key) {
 	int i;
 
 	if(Key) {
-		free(Context->ExpKey);
+		myfree(Context->ExpKey);
 		for(i = 0; i < Nk; i++)
 			IntKey[i] = Key[i * 4] << 24 |
 						Key[i * 4 + 1] << 16 |
@@ -281,7 +282,7 @@ void aes_UpdateContext(aes_ctx_t *Context, uchar *Msg, uchar *Key) {
 	}	
 	
 	if(Msg) {
-		free(Context->State);
+		myfree(Context->State);
 		Context->State = MsgToState(Msg);
 	}
 }
@@ -301,8 +302,8 @@ void aes_InitContext(aes_ctx_t *Context, uchar *Msg, uchar *Key) {
 }
 
 void aes_FreeContext(aes_ctx_t Context) {
-	free(Context.ExpKey);
-	free(Context.State);
+	myfree(Context.ExpKey);
+	myfree(Context.State);
 }
 
 /* TODO!! */

@@ -27,6 +27,9 @@
     <ClCompile Include="..\src\keygen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\tommath.h">
@@ -46,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="..\include\io.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\memory.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

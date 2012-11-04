@@ -29,6 +29,7 @@
 #include "..\include\dh.h"
 #include "..\include\sha256.h"
 #include "..\include\tommath.h"
+#include "..\include\memory.h"
 
 #define SIZE_MIN	512
 
@@ -76,15 +77,19 @@ int main(int argc, char **argv) {
 
 	printf("Agreed Key:\n%08x %08x %08x %08x ", key.h0, key.h1, key.h2, key.h3);
 	printf("%08x %08x %08x %08x\n", key.h4, key.h5, key.h6, key.h7);
+	free(key.string);
 
 	mp_exptmod(&B, &a, &p, &c);
 	key = mp_hash(&c);
 
 	printf("Check:\n%08x %08x %08x %08x ", key.h0, key.h1, key.h2, key.h3);
 	printf("%08x %08x %08x %08x\n", key.h4, key.h5, key.h6, key.h7);
+	free(key.string);
 
 	ret = EXIT_SUCCESS;
 clear:
 	mp_clear_multi(&p, &g, &a, &b, &A, &B, &c, NULL);
+	showmemstats(stdout);
+
 	return ret;
 }
