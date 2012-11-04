@@ -1,5 +1,5 @@
 /* 
- * util.c -- Various utility funcitions
+ * memory.c -- Memory leak detection (with its own memory leaks?)
  * 
  * Copyright (C) 2012  Martin Wolters
  *

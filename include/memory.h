@@ -1,5 +1,5 @@
 /* 
- * memory.h -- util.c header
+ * memory.h -- memory.c header
  * 
  * Copyright (C) 2012  Martin Wolters
  *
