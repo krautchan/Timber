@@ -116,11 +116,13 @@ script\keygen.bat</Command>
     <ClCompile Include="..\src\dh.c" />
     <ClCompile Include="..\src\io.c" />
     <ClCompile Include="..\src\keygen.c" />
+    <ClCompile Include="..\src\memory.c" />
     <ClCompile Include="..\src\sha256.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\dh.h" />
     <ClInclude Include="..\include\io.h" />
+    <ClInclude Include="..\include\memory.h" />
     <ClInclude Include="..\include\sha256.h" />
     <ClInclude Include="..\include\tommath.h" />
     <ClInclude Include="..\include\tommath_class.h" />

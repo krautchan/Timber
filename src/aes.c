@@ -26,6 +26,7 @@
 
 #include "..\include\aes.h"
 #include "..\include\tables.h"
+#include "..\include\memory.h"
 
 static void SubBytes(uchar *State) {
 	int i;

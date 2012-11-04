@@ -1,3 +1,11 @@
+log.txt
+remotelog.txt
+memlog.txt
+client_key.h
+server_key.h
+include\client_key.h
+include\server_key.h
+
 #################
 ## Eclipse
 #################

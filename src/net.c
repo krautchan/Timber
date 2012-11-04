@@ -31,6 +31,7 @@
 #include "..\include\net.h"
 #include "..\include\sha256.h"
 #include "..\include\tommath.h"
+#include "..\include\memory.h"
 
 #ifdef LOG_SERVER
 #include "server_key.h"
@@ -60,8 +61,10 @@ static int CheckHash(char *c, size_t size) {
 		(hash.h5 != dh_key_authed[5]) ||
 		(hash.h6 != dh_key_authed[6]) ||
 		(hash.h7 != dh_key_authed[7])) {
+			free(hash.string);
 			return 0;
 	}
+	free(hash.string);
 	return 1;
 }
 
@@ -85,6 +88,8 @@ static void EstablishSharedSecret(void) {
 	hash = sha256(key, size);
 	conn.dh_shared_key = malloc(32);
 	memcpy(conn.dh_shared_key, hash.string, 32);
+	free(hash.string);
+	free(key);
 
 	mp_clear_multi(&p, &a, &b, &k, NULL);
 }
@@ -95,8 +100,8 @@ int StartWinsock(void) {
 }
 
 unsigned char *CryptRecvData(SOCKET s) {
-	int blocks, i;
-	unsigned char IV[BSIZE], ct[BSIZE], *pt, *out;
+	int blocks, mallsize, i;
+	unsigned char IV[BSIZE], ct[BSIZE], *pt, *out, *buf;
 	aes_ctx_t context;
 
 	if((recv(s, (char*)&blocks, sizeof(blocks), 0)) != sizeof(blocks))
@@ -105,10 +110,14 @@ unsigned char *CryptRecvData(SOCKET s) {
 	if(blocks < 1)
 		return NULL;
 
-	if((out = malloc((blocks - 1) * BSIZE)) == NULL)
+	mallsize = ((blocks - 1) * BSIZE) / BUFSIZE;
+	mallsize *= BUFSIZE;
+	mallsize += (((blocks - 1) * BSIZE) % BUFSIZE)?BUFSIZE:0;
+	
+	if((out = malloc(mallsize)) == NULL)
 		return NULL;
+	memset(out, 0, mallsize);
 
-//	memset(out, 0, (blocks - 1) * BSIZE);
 	recv(s, IV, BSIZE, 0);
 
 	for(i = 1; i < blocks; i++) {
@@ -119,10 +128,12 @@ unsigned char *CryptRecvData(SOCKET s) {
 
 		aes_InitContext(&context, ct, conn.dh_shared_key);
 		aes_Decrypt(context);
-		pt = aes_ContextToChar(context);
-		pt = xorchar(pt, IV, BSIZE);
-
+		buf = aes_ContextToChar(context);
+		aes_FreeContext(context);
+		pt = xorchar(buf, IV, BSIZE);
+				
 		memcpy(out + (i - 1) * BSIZE, pt, BSIZE);
+		free(buf);
 		free(pt);
 		memcpy(IV, ct, BSIZE);
 	}
@@ -281,9 +292,11 @@ int ClientHandshake(SOCKET s) {
 	hash = sha256(conn.dh_remote_key, conn.dh_remote_key_size);
 	
 	if (!CheckHash(conn.dh_remote_key, conn.dh_remote_key_size)) {
+		free(hash.string);
 		printf("Failed.\n");
 		return 0;
 	}
+	free(hash.string);
 	printf("OK.\nSending my public key... ");
 
 	size = sizeof(dh_key_pub);

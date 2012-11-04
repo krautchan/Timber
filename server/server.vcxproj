@@ -15,6 +15,7 @@
     <ClCompile Include="..\src\io.c" />
     <ClCompile Include="..\src\logger.c" />
     <ClCompile Include="..\src\main.c" />
+    <ClCompile Include="..\src\memory.c" />
     <ClCompile Include="..\src\net.c" />
     <ClCompile Include="..\src\sha256.c" />
   </ItemGroup>
@@ -22,6 +23,7 @@
     <ClInclude Include="..\include\aes.h" />
     <ClInclude Include="..\include\io.h" />
     <ClInclude Include="..\include\logger.h" />
+    <ClInclude Include="..\include\memory.h" />
     <ClInclude Include="..\include\net.h" />
     <ClInclude Include="..\include\server_key.h" />
     <ClInclude Include="..\include\sha256.h" />
@@ -70,7 +72,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>LOG_SERVER;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OUTPUT_STATS;LOG_SERVER;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

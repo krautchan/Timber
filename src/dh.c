@@ -26,6 +26,7 @@
 #include "..\include\io.h"
 #include "..\include\dh.h"
 #include "..\include\tommath.h"
+#include "..\include\memory.h"
 
 static int mp_add1(mp_int *a, mp_int *b) {
     mp_int one;
