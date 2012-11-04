@@ -71,7 +71,7 @@ static void addtolist(malloclist_t *entry) {
 	last->next = entry;
 }
 
-static void delfromlist(void *memory) {
+static int delfromlist(void *memory) {
 	malloclist_t *current = mall_list, *last = NULL;
 
 	while(current) {
@@ -82,13 +82,13 @@ static void delfromlist(void *memory) {
 				mall_list = current->next;
 			}
 			free_entry(current);
-			return;
+			return 1;
 		}
 		last = current;
 		current = current->next;
 	}
 
-	return;
+	return 0;
 }
 
 void *mymalloc(size_t size, char *file, int line) {
@@ -109,9 +109,12 @@ void *mymalloc(size_t size, char *file, int line) {
 }
 
 void myfree(void *memory) {
-	delfromlist(memory);
-	n_frees++;
-	free(memory);
+	if(delfromlist(memory)) {
+		n_frees++;
+		free(memory);
+	} else {
+		fprintf(stderr, "WARNING: Called free() on unknown pointer.\n");
+	}
 }
 
 void showmemstats(FILE *fp) {
