@@ -52,11 +52,6 @@ static malloclist_t *make_entry(void *memory, char *file, int line) {
 	return out;
 }
 
-static void free_entry(malloclist_t *entry) {
-	free(entry->file);
-	free(entry);
-}
-
 static void addtolist(malloclist_t *entry) {
 	malloclist_t *current = mall_list, *last = NULL;
 	if(!current) {
@@ -81,7 +76,7 @@ static int delfromlist(void *memory) {
 			} else {
 				mall_list = current->next;
 			}
-			free_entry(current);
+			free(current);
 			return 1;
 		}
 		last = current;
@@ -96,13 +91,8 @@ void *mymalloc(size_t size, char *file, int line) {
 	malloclist_t *newentry;
 	char *buf;
 
-	if((buf = malloc(strlen(file) + 1))) {
-		strcpy(buf, file);		
-
-		if((newentry = make_entry(memory, buf, line))) {
-			addtolist(newentry);
-		}
-	}	
+	if((newentry = make_entry(memory, file, line)))
+		addtolist(newentry);
 
 	n_mallocs++;
 	return memory;
@@ -126,7 +116,7 @@ void showmemstats(FILE *fp) {
 			fprintf(fp, "%s, %d\n", current->file, current->line);
 			buf = current;
 			current = current->next;
-			free_entry(buf);
+			free(buf);
 		}
 	}
 	if(n_mallocs != n_frees)
