@@ -279,7 +279,7 @@ int ClientHandshake(SOCKET s) {
 
 	printf("(%d bits) ", conn.dh_remote_key_size * 8);
 	if((conn.dh_remote_key = malloc(conn.dh_remote_key_size)) == NULL) {
-		printf("ERROR: mymalloc() failed.\n");
+		printf("ERROR: malloc() failed.\n");
 		return 0;
 	}
 
@@ -292,6 +292,7 @@ int ClientHandshake(SOCKET s) {
 	hash = sha256(conn.dh_remote_key, conn.dh_remote_key_size);
 	
 	if (!CheckHash(conn.dh_remote_key, conn.dh_remote_key_size)) {
+		free(hash.string);
 		printf("Failed.\n");
 		return 0;
 	}
