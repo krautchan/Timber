@@ -19,13 +19,16 @@ rd /q /s ipch
 rd /q /s keygen\debug
 rd /q /s keygen\release
 del /q keygen\keygen.vcxproj.user
+del /q keygen\keygen.sdf
 
 rd /q /s client\debug
 rd /q /s client\release
 del /q client\client.vcxproj.user
+del /q client\client.sdf
 
 rd /q /s server\debug
 rd /q /s server\release
-del /q server\logger.vcxproj.user
+del /q server\server.vcxproj.user
+del /q server\server.sdf
 
 cd script
