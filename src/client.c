@@ -136,9 +136,12 @@ int main(int argc, char **argv) {
 
 	WSACleanup();
 
-	free(conn.dh_remote_key);
-	free(conn.dh_shared_key);
-	free(conn.nonce);
+	if(conn.dh_remote_key)
+		free(conn.dh_remote_key);
+	if(conn.dh_shared_key)
+		free(conn.dh_shared_key);
+	if(conn.nonce)
+		free(conn.nonce);
 
 	showmemstats(stdout);
 	return EXIT_SUCCESS;
