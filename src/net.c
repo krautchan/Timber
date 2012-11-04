@@ -68,36 +68,30 @@ static int CheckHash(char *c, size_t size) {
 	return 1;
 }
 
-static int EstablishSharedSecret(void) {
+static void EstablishSharedSecret(void) {
 	mp_int p, a, b, k;
-	int size, ret = 0;
+	int size;
 	unsigned char *key;
 	hash_t hash;
 
-	if(mp_init_multi(&p, &a, &b, &k, NULL) != MP_OKAY)
-		return 0;
+	mp_init_multi(&p, &a, &b, &k, NULL);
 
-	if(mp_read_unsigned_bin(&p, dh_key_p, sizeof(dh_key_p)) != MP_OKAY) goto clear;
-	if(mp_read_unsigned_bin(&a, dh_key_priv, sizeof(dh_key_priv)) != MP_OKAY) goto clear;
-	if(mp_read_unsigned_bin(&b, conn.dh_remote_key, conn.dh_remote_key_size) != MP_OKAY) goto clear;
+	mp_read_unsigned_bin(&p, dh_key_p, sizeof(dh_key_p));
+	mp_read_unsigned_bin(&a, dh_key_priv, sizeof(dh_key_priv));
+	mp_read_unsigned_bin(&b, conn.dh_remote_key, conn.dh_remote_key_size);
 
-	if(mp_exptmod(&b, &a, &p, &k) != MP_OKAY) goto clear;
+	mp_exptmod(&b, &a, &p, &k);
 	size = mp_unsigned_bin_size(&k);
-	if((key = malloc(size)) == NULL) goto freekey;
-	if(mp_to_unsigned_bin(&k, key) != MP_OKAY) goto freekey;
+	key = malloc(size);
+	mp_to_unsigned_bin(&k, key);
 	
 	hash = sha256(key, size);
-	if((conn.dh_shared_key = malloc(32)) == NULL) goto freehash;
+	conn.dh_shared_key = malloc(32);
 	memcpy(conn.dh_shared_key, hash.string, 32);
-	
-	ret = 1;
-freehash:
 	free(hash.string);
-freekey:
 	free(key);
-clear:
+
 	mp_clear_multi(&p, &a, &b, &k, NULL);
-	return ret;
 }
 
 int StartWinsock(void) {
@@ -326,13 +320,11 @@ int ClientHandshake(SOCKET s) {
 		printf("ERROR: Server declined.\n");
 		return 0;
 	}
-	printf("OK.\nEstablishing shared secret... ");
+	printf("OK.\n");
 
-	if(!EstablishSharedSecret()) {
-		printf("Failed.\n");
-		return 0;
-	}
-	printf("OK.\nReceiving nonce... ");
+	EstablishSharedSecret();
+	
+	printf("Shared secret established.\nReceiving nonce... ");
 	recv(s, encnonce, BSIZE, 0);
 	
 	aes_InitContext(&context, encnonce, conn.dh_shared_key);
@@ -340,7 +332,7 @@ int ClientHandshake(SOCKET s) {
 	conn.nonce = aes_ContextToChar(context);
 	aes_FreeContext(context);
 
-	printf("OK.\nHandshake complete.\n\n");
+	printf("Ok.\nHandshake complete.\n\n");
 	printf("PING... ");
 
 	CryptSendMsg(s, MSG_PING);
@@ -386,9 +378,11 @@ int ServerHandshake(SOCKET s) {
 	if((conn.dh_remote_key = malloc(conn.dh_remote_key_size)) == NULL) goto nack;
 	if((recv(s, conn.dh_remote_key, conn.dh_remote_key_size, 0)) != size) goto nack;		
 	if(!CheckHash(conn.dh_remote_key, conn.dh_remote_key_size)) goto nack;
-	if(!EstablishSharedSecret()) goto nack;
+		
 	send(s, (char*)&ack, sizeof(ack), 0);
-	
+
+	EstablishSharedSecret();
+
 	/* Generating Nonce */
 	conn.nonce = malloc(BSIZE);
 	fillbuffer(conn.nonce, BSIZE, NULL);
