@@ -272,7 +272,7 @@ void aes_UpdateContext(aes_ctx_t *Context, uchar *Msg, uchar *Key) {
 	int i;
 
 	if(Key) {
-		myfree(Context->ExpKey);
+		free(Context->ExpKey);
 		for(i = 0; i < Nk; i++)
 			IntKey[i] = Key[i * 4] << 24 |
 						Key[i * 4 + 1] << 16 |
@@ -282,7 +282,7 @@ void aes_UpdateContext(aes_ctx_t *Context, uchar *Msg, uchar *Key) {
 	}	
 	
 	if(Msg) {
-		myfree(Context->State);
+		free(Context->State);
 		Context->State = MsgToState(Msg);
 	}
 }
@@ -302,8 +302,8 @@ void aes_InitContext(aes_ctx_t *Context, uchar *Msg, uchar *Key) {
 }
 
 void aes_FreeContext(aes_ctx_t Context) {
-	myfree(Context.ExpKey);
-	myfree(Context.State);
+	free(Context.ExpKey);
+	free(Context.State);
 }
 
 /* TODO!! */
