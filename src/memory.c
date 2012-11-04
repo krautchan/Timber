@@ -110,15 +110,19 @@ void myfree(void *memory) {
 void showmemstats(FILE *fp) {
 	malloclist_t *current = mall_list, *buf;
 
-	if(n_frees < n_mallocs) {
-		fprintf(fp, "Showing unfreed memory:\n");
-		while(current) {
-			fprintf(fp, "%s, %d\n", current->file, current->line);
-			buf = current;
-			current = current->next;
-			free(buf);
+	if(n_mallocs != n_frees) {
+		printf("\n--- memory.c summary ---\n");
+		if(n_frees < n_mallocs) {
+			fprintf(fp, "Showing unfreed memory:\n");
+			while(current) {
+				fprintf(fp, "%s, %d\n", current->file, current->line);
+				buf = current;
+				current = current->next;
+				free(buf);
+			}
 		}
-	}
-	if(n_mallocs != n_frees)
+
 		fprintf(fp, "%d malloc()s; %d free()s.\n", n_mallocs, n_frees);
+		printf("--- end summary ---\n");
+	}
 }
