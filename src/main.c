@@ -121,7 +121,9 @@ static void ServerLoop(SOCKET s) {
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	SOCKET s;
+#ifdef _DEBUG
 	FILE *fp;
+#endif
 
 	StartLogger(TEXT(LOGFILE));
 	
