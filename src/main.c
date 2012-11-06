@@ -135,7 +135,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	WSACleanup();
 
-#ifdef OUTPUT_STATS
+#ifdef _DEBUG
 	if((fp = fopen("memlog.txt", "w")) != NULL) {
 		showmemstats(fp);
 		fclose(fp);

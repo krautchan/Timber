@@ -83,7 +83,9 @@
     <ClCompile Include="..\src\io.c" />
     <ClCompile Include="..\src\net.c" />
     <ClCompile Include="..\src\sha256.c" />
-    <ClCompile Include="..\src\memory.c" />
+    <ClCompile Include="..\src\memory.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\aes.h" />

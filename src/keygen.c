@@ -89,7 +89,10 @@ int main(int argc, char **argv) {
 	ret = EXIT_SUCCESS;
 clear:
 	mp_clear_multi(&p, &g, &a, &b, &A, &B, &c, NULL);
+
+#ifdef _DEBUG
 	showmemstats(stdout);
+#endif
 
 	return ret;
 }

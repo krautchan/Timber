@@ -143,6 +143,9 @@ int main(int argc, char **argv) {
 	if(conn.nonce)
 		free(conn.nonce);
 
+#ifdef _DEBUG
 	showmemstats(stdout);
+#endif
+
 	return EXIT_SUCCESS;
 }

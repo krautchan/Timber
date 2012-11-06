@@ -21,6 +21,7 @@
  * 
  */
 
+#ifdef _DEBUG
 #include <stdio.h>
 
 #ifndef UTIL_H_
@@ -35,4 +36,5 @@ void *mymalloc(size_t size, char *file, int line);
 void myfree(void *memory);
 void showmemstats(FILE *fp);
 
+#endif
 #endif

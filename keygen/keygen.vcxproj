@@ -116,7 +116,9 @@ script\keygen.bat</Command>
     <ClCompile Include="..\src\dh.c" />
     <ClCompile Include="..\src\io.c" />
     <ClCompile Include="..\src\keygen.c" />
-    <ClCompile Include="..\src\memory.c" />
+    <ClCompile Include="..\src\memory.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\sha256.c" />
   </ItemGroup>
   <ItemGroup>
