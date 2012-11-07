@@ -27,7 +27,7 @@
 #define NET_H_
 
 #define PROTO_MAGIC	0x1ca45ce6 
-#define	PROTO_VER	0x00000001
+#define	PROTO_VER	0x00000002
 
 #define MSG_ACK		0x3b9ac9ff
 #define MSG_NACK	0xc4653600
