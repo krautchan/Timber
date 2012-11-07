@@ -88,8 +88,7 @@ static int delfromlist(void *memory) {
 
 void *mymalloc(size_t size, char *file, int line) {
 	void *memory = malloc(size);
-	malloclist_t *newentry;
-	char *buf;
+	malloclist_t *newentry;	
 
 	if((newentry = make_entry(memory, file, line)))
 		addtolist(newentry);

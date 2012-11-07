@@ -36,6 +36,9 @@
     <ClCompile Include="..\src\memory.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\install.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\aes.h">
