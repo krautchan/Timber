@@ -10,6 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client\client.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "server\server.vcxproj", "{A8A3583F-979E-43AC-AA56-1BCFCAFDD1AE}"
 	ProjectSection(ProjectDependencies) = postProject
+		{0ABAB33C-8B5C-43B7-8BE6-BBD82E871F90} = {0ABAB33C-8B5C-43B7-8BE6-BBD82E871F90}
 		{C2AC985F-DF43-4B31-ADBA-8921056B989C} = {C2AC985F-DF43-4B31-ADBA-8921056B989C}
 	EndProjectSection
 EndProject
