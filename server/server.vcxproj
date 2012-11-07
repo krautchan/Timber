@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\aes.h" />
+    <ClInclude Include="..\include\install.h" />
     <ClInclude Include="..\include\io.h" />
     <ClInclude Include="..\include\logger.h" />
     <ClInclude Include="..\include\memory.h" />

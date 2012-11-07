@@ -68,5 +68,8 @@
     <ClInclude Include="..\include\memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\install.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

