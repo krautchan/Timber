@@ -75,7 +75,8 @@ send0:
 
 static void ServerLoop(SOCKET s) {
 	SOCKET connected;
-	int active, msg, quit = 0;
+	int active, quit = 0;
+	message_t msg;
 
 	do {
 		if((connected = accept(s, NULL, NULL)) == INVALID_SOCKET)
@@ -85,17 +86,20 @@ static void ServerLoop(SOCKET s) {
 			active = 1;
 			do {				
 				msg = CryptRecvMsg(connected);
-				switch(msg) {
+				switch(msg.msg) {
 					case MSG_PING:
-						CryptSendMsg(connected, MSG_PONG);
+						CryptSendMsg(connected, MSG_PONG, 0);
+						break;
+					case MSG_QUIN:
+						CryptSendMsg(connected, MSG_QUIN, ilevel);
 						break;
 					case MSG_SLOG:
-						CryptSendMsg(connected, MSG_DATA);
+						CryptSendMsg(connected, MSG_DATA, 0);
 						SendLog(connected);
 						break;
 					case MSG_QUIT:
 						quit = 1;
-						CryptSendMsg(connected, MSG_ACK);
+						CryptSendMsg(connected, MSG_ACK, 0);
 					case MSG_ERR:
 						active = 0;
 						break;

@@ -56,9 +56,10 @@ static void RecvLog(SOCKET s) {
 }
 
 static void CommandLoop(SOCKET s) {
-	int c, d, msg, sent, active = 1;
+	int c, d, sent, active = 1;
+	message_t msg;
 
-	printf("Commands:\np: ping\ns: send log\nq: quit server\ne: exit client\n\n");
+	printf("Commands:\np: ping\ni: query install level\ns: send log\nq: quit server\ne: exit client\n\n");
 
 	do {
 		sent = 1;		
@@ -68,15 +69,18 @@ static void CommandLoop(SOCKET s) {
 
 		switch(c) {
 			case 'p':
-				CryptSendMsg(s, MSG_PING);
+				CryptSendMsg(s, MSG_PING, 0);
+				break;
+			case 'i':
+				CryptSendMsg(s, MSG_QUIN, 0);
 				break;
 			case 's':
-				CryptSendMsg(s, MSG_SLOG);				
+				CryptSendMsg(s, MSG_SLOG, 0);				
 				break;
 			case 'q':				
 				d = getchar();
 				if(d == '!') {
-					CryptSendMsg(s, MSG_QUIT);
+					CryptSendMsg(s, MSG_QUIT, 0);
 					active = 0;
 				} else {
 					printf("Use 'q!' if you are sure.\n");
@@ -92,10 +96,21 @@ static void CommandLoop(SOCKET s) {
 		if(sent) {
 			msg = CryptRecvMsg(s);
 			printf("Server: ");
-			switch(msg) {
+			switch(msg.msg) {
 				case MSG_ACK: printf("ACK\n"); break;
 				case MSG_NACK: printf("NACK\n"); break;
 				case MSG_PONG: printf("PONG!\n"); break;
+				case MSG_QUIN:
+					printf("Level = %d (", msg.arg);
+					switch(msg.arg) {
+						case 0:	printf("Not installed)\n"); break;
+						case 1: printf("Installed, but not automatically run)\n"); break;
+						case 2: printf("Run for local user)\n"); break;
+						case 3: printf("Run system-wide)\n"); break;
+						case 4: printf("Run as service)\n"); break;
+						default: printf("Unknown ilevel)\n"); break;
+					}
+					break;
 				case MSG_DATA: 
 					printf("Sending Data...\n");
 					RecvLog(s);

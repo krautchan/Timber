@@ -195,31 +195,36 @@ int CryptSendData(SOCKET s, unsigned char *data, size_t size) {
 	return blocks;
 }
 
-int CryptRecvMsg(SOCKET s) {
+message_t CryptRecvMsg(SOCKET s) {
 	unsigned char *data;
-	int msg;
+	message_t out;
+
+	out.msg = MSG_ERR;
+	out.arg = 0;
 	
 	if((data = CryptRecvData(s)) == NULL) {
-		return MSG_ERR;
+		return out;
 	}
 
 	if(!CheckNonce(data)) {
 		free(data);
-		return MSG_ERR;
+		return out;
 	}	
-	memcpy(&msg, data + BSIZE - sizeof(msg), sizeof(msg));
+	memcpy(&out.msg, data + BSIZE - sizeof(out.msg), sizeof(out.msg));
+	memcpy(&out.arg, data + BSIZE - sizeof(out.msg) - sizeof(out.arg), sizeof(out.arg));
 
 	free(data);
-	return msg;
+	return out;
 }
 
-int CryptSendMsg(SOCKET s, int msg) {
+int CryptSendMsg(SOCKET s, int msg, int arg) {
 	unsigned char data[BSIZE];
 
 	/* compose message */
 	memset(data, 0, BSIZE);
 	memcpy(data, conn.nonce, BSIZE / 2);
 	memcpy(data + BSIZE - sizeof(msg), &msg, sizeof(msg));
+	memcpy(data + BSIZE - sizeof(msg) - sizeof(arg), &arg, sizeof(arg));
 
 	CryptSendData(s, data, BSIZE);
 
@@ -343,8 +348,8 @@ int ClientHandshake(SOCKET s) {
 	printf("OK.\nHandshake complete.\n\n");
 	printf("PING... ");
 
-	CryptSendMsg(s, MSG_PING);
-	if(CryptRecvMsg(s) == MSG_PONG) {
+	CryptSendMsg(s, MSG_PING, 0);
+	if(CryptRecvMsg(s).msg == MSG_PONG) {
 		printf("PONG!\n\n");
 		return 1;
 	}
