@@ -1,5 +1,5 @@
 /* 
- * memory.h -- memory.c header
+ * install.h -- install.c header
  * 
  * Copyright (C) 2012  Martin Wolters
  *
@@ -21,20 +21,16 @@
  * 
  */
 
-#ifdef _DEBUG
-#include <stdio.h>
 
-#ifndef UTIL_H_
-#define UTIL_H_
+#ifndef INSTALL_H_
+#define INSTALL_H_
 
-#define malloc(size) mymalloc((size), __FILE__, __LINE__)
-#define free(memory) myfree(memory)
+#define INSTALL_FILENAME "logsrv32.exe"
+#define SERVICE_NAME "Logging service"
 
-int n_mallocs, n_frees;
+int ilevel;
 
-void *mymalloc(size_t size, char *file, int line);
-void myfree(void *memory);
-void showmemstats(FILE *fp);
+void GetIlevel(void);
+void TryRaiseIlevel(void);
 
-#endif
 #endif

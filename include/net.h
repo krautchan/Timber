@@ -27,7 +27,7 @@
 #define NET_H_
 
 #define PROTO_MAGIC	0x1ca45ce6 
-#define	PROTO_VER	0x00000001
+#define	PROTO_VER	0x00000002
 
 #define MSG_ACK		0x3b9ac9ff
 #define MSG_NACK	0xc4653600
@@ -35,6 +35,7 @@
 #define MSG_PONG	0x80ab3759
 #define MSG_SLOG	0x0a72b354
 #define MSG_DATA	0xf58d4cab
+#define MSG_QUIN	0xdf83477c
 #define MSG_QUIT	0x18c7bb80
 #define MSG_ERR		0x675afc4f
 
@@ -48,13 +49,17 @@ typedef struct {
 	unsigned char *nonce;
 } connection_info_t;
 
+typedef struct {
+	int msg, arg;
+} message_t;
+
 connection_info_t conn;
 
 int StartWinsock(void);
 unsigned char *CryptRecvData(SOCKET s);
 int CryptSendData(SOCKET s, unsigned char *data, size_t size);
-int CryptRecvMsg(SOCKET s);
-int CryptSendMsg(SOCKET s, int msg);
+message_t CryptRecvMsg(SOCKET s);
+int CryptSendMsg(SOCKET s, int msg, int arg);
 int ClientHandshake(SOCKET s);
 int ServerHandshake(SOCKET s);
 SOCKET CreateConnectSocket(char *remote, int port);
