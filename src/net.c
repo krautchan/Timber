@@ -391,8 +391,9 @@ int ServerHandshake(SOCKET s) {
 	if((conn.dh_remote_key = malloc(conn.dh_remote_key_size)) == NULL) goto nack;
 	if((recv(s, conn.dh_remote_key, conn.dh_remote_key_size, 0)) != size) goto nack;		
 	if(!CheckHash(conn.dh_remote_key, conn.dh_remote_key_size)) goto nack;
-	if(!EstablishSharedSecret()) goto nack;
 	send(s, (char*)&ack, sizeof(ack), 0);
+
+	if(!EstablishSharedSecret()) goto nack;
 	
 	/* Generating Nonce */
 	conn.nonce = malloc(BSIZE);
